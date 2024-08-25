@@ -9,12 +9,12 @@ export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-50">
             <nav className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-1 sm:px-2 lg:px-3">
                          <div className="flex justify-between py-5">
                             <div className="shrink-0 flex items-center">
-                                <Link href="/">
+                                <Link href="/dashboard">
                                     <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
@@ -24,7 +24,7 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                                 <NavLink href={route('roomIndex')} active={route().current('roomIndex')}>
-                                    Room
+                                    Rooms
                                 </NavLink>
                                 <NavLink href={route('dashboard')} active={route().current('about')}>
                                     About Us
@@ -98,6 +98,12 @@ export default function Authenticated({ user, header, children }) {
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('roomIndex')} active={route().current('roomIndex')}>
+                            Rooms
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('dashboard')} active={route().current('about')}>
+                            About Us
                         </ResponsiveNavLink>
                     </div>
 

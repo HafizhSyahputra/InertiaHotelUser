@@ -5,7 +5,7 @@ import profilepicture from "../../../img/profile-picture.svg";
 function PromoRating() {
     return (
         <div>
-            <h1 className="text-3xl px-28 font-bold text-black mt-24 mb-7">
+            <h1 className="text-3xl px-[180px] font-bold text-black mt-24 mb-12">
                 Promotion this month
             </h1>
             <div className="promo gap-x-12 flex flex-row justify-center mb-10">

@@ -38,4 +38,9 @@ class Room extends Model
      * @var bool
      */
     public $timestamps = true; // Aktifkan timestamps untuk created_at dan updated_at
+
+    public function detailRoom()
+    {
+        return $this->hasOne(DetailRoom::class, 'id_room', 'id_room');
+    }
 }

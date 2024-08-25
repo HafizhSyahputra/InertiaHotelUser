@@ -15,7 +15,9 @@ Route::get('/', function () {
     ]);
 });
 
+// Room Routes
 Route::get('/Room', [RoomController::class, 'index'])->name('roomIndex');
+Route::get('/detail/room/{room_id}', [RoomController::class, 'LoadDetail'])->name('roomDetail');
 
 
 Route::get('/dashboard', function () {

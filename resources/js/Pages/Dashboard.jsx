@@ -14,9 +14,9 @@ export default function Dashboard({ auth }) {
             <Head title="Dashboard" />
 
             <div className="relative">
-                <div className="grid grid-cols-2">
+                <div className="flex flex-row">
                     <img
-                        className="w-[100%] rounded-br-[12%]"
+                        className="w-[800px] rounded-br-[12%]"
                         src={preview}
                         alt="Room Preview"
                     />
@@ -38,10 +38,10 @@ export default function Dashboard({ auth }) {
                         </h3>
                     </div>
                 </div>
-                {/* <div className="absolute inset-x-0 bottom-[210px] flex justify-center">
+                <div className="absolute inset-x-0 bottom-[1710px] flex justify-center">
                     <SearchBar />
-                </div> */}
-                <div className="flex justify-center gap-x-5 px-32 mt-20 mb-20">
+                </div>
+                <div className="flex justify-center gap-x-10 px-32 mt-20 mb-20">
                     <div className="flex flex-col">
                         {" "}
                         <h3 className="w-96 text-3xl mt-20 leading-relaxed">
@@ -54,7 +54,7 @@ export default function Dashboard({ auth }) {
                             ballpark value adder activity to beta test.
                         </p>
                     </div>
-                    <img src={preview1} className="w-[337px] ml-20" />
+                    <img src={preview1} className="w-[337px] ml-32" />
                     <img src={preview2} className="w-[337px]" />
                 </div>
                 <div className="divider">
