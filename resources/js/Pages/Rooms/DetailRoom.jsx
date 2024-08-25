@@ -15,7 +15,7 @@ function DetailRoom({ user, rooms }) {
                 <div className="flex flex-row mt-16 gap-x-16">
                     <OrderForm rooms={rooms} />
                     <div className="flex flex-col">
-                        <AboutRoom />
+                        <AboutRoom rooms={rooms}/>
                     </div>
                 </div>
             </div>
