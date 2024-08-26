@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AboutUsControllers\AboutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomControllers\RoomController;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,10 @@ Route::get('/', function () {
 // Room Routes
 Route::get('/Room', [RoomController::class, 'index'])->name('roomIndex');
 Route::get('/detail/room/{room_id}', [RoomController::class, 'LoadDetail'])->name('roomDetail');
+
+// About Us
+Route::get('/About-Us', [AboutController::class, 'index'])->name('aboutIndex');
+
 
 
 Route::get('/dashboard', function () {
