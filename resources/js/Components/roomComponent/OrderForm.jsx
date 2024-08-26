@@ -1,13 +1,36 @@
 import React, { useState } from "react";
 import TextInput from "../TextInput";
+import { Inertia } from "@inertiajs/inertia";
 
 function OrderForm({ rooms }) {
-    const [totalPeople, setTotalPeople] = useState();
+    const [totalPeople, setTotalPeople] = useState("");
+    const [checkInDate, setCheckInDate] = useState("2024-08-26");
+    const [checkOutDate, setCheckOutDate] = useState("2024-08-27");
     const [error, setError] = useState("");
+
+    const calculateTotalPrice = (room, nights) => {
+        return room.amount * nights;
+    };
+
+    const calculateSavings = (room, nights) => {
+        const perNightSavings = room.price - room.amount;
+        return perNightSavings * nights;
+    };
+
+    const calculateNights = () => {
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+        const differenceInTime = checkOut - checkIn;
+        const differenceInDays = Math.ceil(
+            differenceInTime / (1000 * 3600 * 24)
+        ); // Selisih hari
+        return differenceInDays;
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const room = rooms[0];
+        const nights = calculateNights();
 
         if (!totalPeople || totalPeople < 1) {
             setError("Total people must be at least 1.");
@@ -21,13 +44,51 @@ function OrderForm({ rooms }) {
             return;
         }
 
-        // Proceed with form submission logic here
+        if (nights < 1) {
+            setError("Check-out date must be after check-in date.");
+            return;
+        }
+
+        // Membuat objek untuk menyimpan data ke localStorage
+        const bookingData = {
+            checkInDate,
+            checkOutDate,
+            totalPeople,
+            room: {
+                id_room: room.id_room,
+                amount: room.amount,
+                price: room.price,
+                bed_type: room.detail_room?.bed_type,
+            },
+            nights,
+            totalPrice: calculateTotalPrice(room, nights),
+            totalSavings: calculateSavings(room, nights),
+        };
+
+        // Simpan data ke localStorage
+        localStorage.setItem("bookingData", JSON.stringify(bookingData));
+
+        console.log("Booking data saved to localStorage:", bookingData);
+
+        // Mengarahkan ke halaman pembayaran menggunakan Inertia
+        Inertia.visit("/payment-detail", {
+             onSuccess: () => {
+                // Optional: Tangani setelah berhasil mengunjungi halaman pembayaran
+                console.log("Redirected to payment page successfully");
+            },
+            onError: (errors) => {
+                // Optional: Tangani jika ada kesalahan
+                console.log("Error redirecting to payment page:", errors);
+            },
+        });
     };
 
     return (
         <div className="h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7">
             {rooms.map((room) => {
-                const savings = room.price - room.amount;
+                const nights = calculateNights();
+                const totalPrice = calculateTotalPrice(room, nights);
+                const totalSavings = calculateSavings(room, nights);
 
                 return (
                     <div key={room.id_room}>
@@ -39,9 +100,11 @@ function OrderForm({ rooms }) {
                                 })}{" "}
                             </h3>
                             <span className="text-lg font-bold text-red-600">
-                                Rp {savings.toLocaleString("id-ID", {
+                                Rp{" "}
+                                {Number(totalSavings).toLocaleString("id-ID", {
                                     minimumFractionDigits: 0,
-                                })} OFF
+                                })}{" "}
+                                OFF
                             </span>
                         </div>
                         <h1 className="text-2xl font-semibold text-black mt-3">
@@ -49,6 +112,7 @@ function OrderForm({ rooms }) {
                             {Number(room.amount).toLocaleString("id-ID", {
                                 minimumFractionDigits: 0,
                             })}{" "}
+                            / night
                         </h1>
 
                         <form onSubmit={handleSubmit}>
@@ -60,7 +124,10 @@ function OrderForm({ rooms }) {
                                         </h4>
                                         <TextInput
                                             type="date"
-                                            defaultValue="2024-12-09"
+                                            value={checkInDate}
+                                            onChange={(e) =>
+                                                setCheckInDate(e.target.value)
+                                            }
                                             className="border border-none outline-none focus:outline-none bg-transparent"
                                             required
                                         />
@@ -71,7 +138,10 @@ function OrderForm({ rooms }) {
                                         </h4>
                                         <TextInput
                                             type="date"
-                                            defaultValue="2024-12-10"
+                                            value={checkOutDate}
+                                            onChange={(e) =>
+                                                setCheckOutDate(e.target.value)
+                                            }
                                             className="border border-none outline-none focus:outline-none bg-transparent"
                                             required
                                         />
@@ -83,7 +153,7 @@ function OrderForm({ rooms }) {
                                     </h4>
                                     <TextInput
                                         type="number"
-                                        value={totalPeople}
+                                        value={totalPeople || ""}
                                         placeholder="Insert Total People"
                                         onChange={(e) =>
                                             setTotalPeople(e.target.value)
@@ -91,6 +161,7 @@ function OrderForm({ rooms }) {
                                         className="border border-none outline-none focus:outline-none bg-transparent w-full"
                                         required
                                     />
+
                                     {error && (
                                         <p className="text-red-500 text-sm mt-1">
                                             {error}
@@ -100,7 +171,9 @@ function OrderForm({ rooms }) {
                             </div>
 
                             <div className="mt-4 border rounded-lg p-4">
-                                <h4 className="text-sm font-medium">Bed Type</h4>
+                                <h4 className="text-sm font-medium">
+                                    Bed Type
+                                </h4>
                                 {room.detail_room?.bed_type && (
                                     <TextInput
                                         type="text"
@@ -116,17 +189,19 @@ function OrderForm({ rooms }) {
                                     <span>Menghemat Sebesar</span>
                                     <span>
                                         Rp{" "}
-                                        {savings.toLocaleString("id-ID", {
-                                            minimumFractionDigits: 0,
-                                        })}
+                                        {Number(totalSavings).toLocaleString(
+                                            "id-ID",
+                                            {
+                                                minimumFractionDigits: 0,
+                                            }
+                                        )}
                                     </span>
                                 </div>
                                 <div className="flex justify-between font-bold">
-                                    <span>Total Harga</span>
+                                    <span>Total Harga ({nights} malam)</span>
                                     <span>
-                                        {" "}
                                         Rp{" "}
-                                        {Number(room.amount).toLocaleString(
+                                        {Number(totalPrice).toLocaleString(
                                             "id-ID",
                                             {
                                                 minimumFractionDigits: 0,
@@ -137,7 +212,7 @@ function OrderForm({ rooms }) {
                             </div>
 
                             <button className="mt-5 w-full py-3 bg-[#435585] text-white font-semibold rounded-lg">
-                                Pesan Sekarang
+                                Process to Payment
                             </button>
                         </form>
                     </div>

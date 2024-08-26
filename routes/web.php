@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutUsControllers\AboutController;
+use App\Http\Controllers\PaymentControllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomControllers\RoomController;
 use Illuminate\Foundation\Application;
@@ -22,6 +23,9 @@ Route::get('/detail/room/{room_id}', [RoomController::class, 'LoadDetail'])->nam
 
 // About Us
 Route::get('/About-Us', [AboutController::class, 'index'])->name('aboutIndex');
+
+// Payment Routes
+Route::get('/payment-detail', [PaymentController::class, 'index'])->name('paymentIndex');
 
 
 
