@@ -16,6 +16,8 @@ class Room extends Model
         'address',
         'rate',
         'price',
+        'discount',
+        'amount',
     ];
 
     /**
