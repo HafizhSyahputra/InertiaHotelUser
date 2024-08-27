@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TextInput from "../TextInput";
 import { Inertia } from "@inertiajs/inertia";
+import Cookies from "js-cookie";
 
 function OrderForm({ rooms }) {
     const [totalPeople, setTotalPeople] = useState("");
@@ -31,57 +32,68 @@ function OrderForm({ rooms }) {
         event.preventDefault();
         const room = rooms[0];
         const nights = calculateNights();
-
+    
         if (!totalPeople || totalPeople < 1) {
             setError("Total people must be at least 1.");
             return;
         }
-
+    
         if (totalPeople > room.detail_room?.capacity) {
             setError(
                 `Cannot exceed the capacity of ${room.detail_room?.capacity} People.`
             );
             return;
         }
-
+    
         if (nights < 1) {
             setError("Check-out date must be after check-in date.");
             return;
         }
-
+    
         // Membuat objek untuk menyimpan data ke localStorage
-        const bookingData = {
+        Cookies.set('bookingData', JSON.stringify({
             checkInDate,
             checkOutDate,
             totalPeople,
             room: {
+                name: room.name,
                 id_room: room.id_room,
+                id_detail: room.detail_room?.id_detail,
                 amount: room.amount,
                 price: room.price,
                 bed_type: room.detail_room?.bed_type,
+                images: room.detail_room?.images || [],
             },
             nights,
             totalPrice: calculateTotalPrice(room, nights),
             totalSavings: calculateSavings(room, nights),
-        };
-
-        // Simpan data ke localStorage
-        localStorage.setItem("bookingData", JSON.stringify(bookingData));
-
-        console.log("Booking data saved to localStorage:", bookingData);
-
-        // Mengarahkan ke halaman pembayaran menggunakan Inertia
-        Inertia.visit("/payment-detail", {
-             onSuccess: () => {
-                // Optional: Tangani setelah berhasil mengunjungi halaman pembayaran
-                console.log("Redirected to payment page successfully");
+        }), { expires: 1 });
+    
+        Inertia.post('/api/save-booking-data', {
+            checkInDate,
+            checkOutDate,
+            totalPeople,
+            room: {
+                name: room.name,
+                id_room: room.id_room,
+                id_detail: room.detail_room?.id_detail,
+                amount: room.amount,
+                price: room.price,
+                bed_type: room.detail_room?.bed_type,
+                images: room.detail_room?.images || [],
             },
+            nights,
+            totalPrice: calculateTotalPrice(room, nights),
+            totalSavings: calculateSavings(room, nights),
+        }, {
+            onSuccess: () => {
+             },
             onError: (errors) => {
-                // Optional: Tangani jika ada kesalahan
                 console.log("Error redirecting to payment page:", errors);
             },
         });
     };
+    
 
     return (
         <div className="h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7">
@@ -92,6 +104,13 @@ function OrderForm({ rooms }) {
 
                 return (
                     <div key={room.id_room}>
+                        {room.detail_room?.images && (
+                            <img
+                                className="w-0 h-0 overflow-hidden"
+                                src={room.detail_room.images[0]}
+                                alt="Room image"
+                            />
+                        )}
                         <div className="flex flex-row gap-x-5">
                             <h3 className="text-xl font-semibold line-through text-gray-400">
                                 Rp{" "}

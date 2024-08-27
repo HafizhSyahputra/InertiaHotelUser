@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     /*
@@ -34,5 +33,17 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+
+  'midtrans' => [
+    'server_key' => env('MIDTRANS_SERVER_KEY'),
+    'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+    'curl_options' => [
+        CURLOPT_SSL_VERIFYPEER => false, // Nonaktifkan verifikasi SSL
+        CURLOPT_SSL_VERIFYHOST => false, // Nonaktifkan verifikasi host SSL
+    ],
+],
+
+
+
 
 ];

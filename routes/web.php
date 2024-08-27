@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\AboutUsControllers\AboutController;
 use App\Http\Controllers\PaymentControllers\PaymentController;
-use App\Http\Controllers\ProfileController;
+ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomControllers\RoomController;
+use App\Http\Controllers\Transactions\TransactionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,8 +26,11 @@ Route::get('/detail/room/{room_id}', [RoomController::class, 'LoadDetail'])->nam
 Route::get('/About-Us', [AboutController::class, 'index'])->name('aboutIndex');
 
 // Payment Routes
-Route::get('/payment-detail', [PaymentController::class, 'index'])->name('paymentIndex');
-
+Route::get('/payment-detail', [PaymentController::class, 'index'])->name('payment-detail');
+Route::post('/api/save-booking-data', [PaymentController::class, 'saveBookingData']);
+Route::post('/save-transaction', [PaymentController::class, 'storeTransaction']);
+ // Transaction Routes
+ Route::get('/transactions', [TransactionController::class, 'index'])->name('transaction.index');
 
 
 Route::get('/dashboard', function () {

@@ -31,5 +31,10 @@ class DetailRoom extends Model
     {
         return $this->belongsTo(Room::class, 'id_room', 'id_room');
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transactions::class, 'detail_room_id', 'id_detail');
+    }
 }
 
