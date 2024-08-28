@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class DetailRoom extends Model
 {
@@ -36,5 +37,22 @@ class DetailRoom extends Model
     {
         return $this->hasMany(Transactions::class, 'detail_room_id', 'id_detail');
     }
-}
 
+    public function updateStatusBasedOnTransactions()
+    {
+        $hasActiveTransaction = $this->transactions()
+            ->whereIn('status', ['active', 'Waiting for Payment'])
+            ->exists();
+    
+        Log::info("Updating DetailRoom ID {$this->id_detail}. Active Transaction: " . ($hasActiveTransaction ? 'Yes' : 'No'));
+    
+        if ($hasActiveTransaction) {
+            $this->status = 'booked';
+        } else {
+            $this->status = 'available';
+        }
+    
+        $this->save();
+    }
+    
+}

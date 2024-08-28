@@ -5,11 +5,11 @@ import { Textarea } from "@headlessui/react";
 const DetailForm = ({ user }) => {
     return (
         <div>
-            <h3 className="text-md text-gray-400 mb-5 font-thin">
+            <h3 className="text-md text-gray-400 mb-10 font-thin">
                 Change the following content in your profile page
             </h3>
 
-            <div className="bg-white shadow-md rounded-md px-16 py-10  flex flex-col max-w-full">
+            <div className="bg-white shadow-md rounded-md px-16 py-7 flex flex-col max-w-full">
                 <form key={user.id}>
                     <div className="-mx-3 md:flex mb-6">
                         <div className="md:w-full px-3  ">
@@ -112,7 +112,7 @@ const DetailForm = ({ user }) => {
                             id="note"
                             label="Note"
                             className={
-                                "appearance-none block w-full bg-grey-lighter text-grey-darker border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md h-36 px-4 mb-1  shadow-sm"
+                                "appearance-none block w-full bg-grey-lighter text-grey-darker border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md h-60 px-4 mb-1  shadow-sm"
                             }
                         />
                     </div>

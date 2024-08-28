@@ -1,13 +1,17 @@
-// HistoryPay.jsx
 import React from "react";
 
-function HistoryPay({ transactions, selectedStatus, toggleExpand, expandedTransactionId }) {
+function HistoryPay({
+    transactions,
+    selectedStatus,
+    toggleExpand,
+    expandedTransactionId,
+}) {
     const filteredTransactions =
         selectedStatus === "all"
             ? transactions
             : transactions.filter(
                   (transaction) => transaction.status === selectedStatus
-            );
+              );
 
     return (
         <div>
@@ -27,12 +31,22 @@ function HistoryPay({ transactions, selectedStatus, toggleExpand, expandedTransa
                             <h2 className="text-xl font-semibold text-gray-800">
                                 {transaction.order_id}
                             </h2>
-                            <h3 className="text-xl font-bold text-gray-700">
+                            <h3 className="text-xl font-bold text-gray-700 truncate">
                                 {transaction.room.name}
                             </h3>
                             <p className="text-sm font-medium text-green-800">
                                 {transaction.status}
                             </p>
+                            <div className="flex justify-between items-center mt-4">
+                                <p className="text-sm font-bold">Purchase date</p>
+                                <p className="text-sm font-bold">
+                                    {new Intl.DateTimeFormat("id-ID", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    }).format(new Date(transaction.created_at))}
+                                </p>
+                            </div>
 
                             {expandedTransactionId === transaction.id && (
                                 <div className="mt-4 text-gray-700">
@@ -71,7 +85,8 @@ function HistoryPay({ transactions, selectedStatus, toggleExpand, expandedTransa
                                             <strong className="font-semibold">
                                                 Tax:
                                             </strong>{" "}
-                                            Rp{Number(
+                                            Rp
+                                            {Number(
                                                 transaction.tax
                                             ).toLocaleString("id-ID", {
                                                 minimumFractionDigits: 0,
@@ -81,7 +96,8 @@ function HistoryPay({ transactions, selectedStatus, toggleExpand, expandedTransa
                                             <strong className="font-semibold">
                                                 Total Price:
                                             </strong>{" "}
-                                            Rp{Number(
+                                            Rp
+                                            {Number(
                                                 transaction.total_price
                                             ).toLocaleString("id-ID", {
                                                 minimumFractionDigits: 0,

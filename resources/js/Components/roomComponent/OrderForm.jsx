@@ -1,13 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextInput from "../TextInput";
 import { Inertia } from "@inertiajs/inertia";
 import Cookies from "js-cookie";
 
 function OrderForm({ rooms }) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const formatDate = (date) => {
+        return date.toISOString().split("T")[0];
+    };
+
     const [totalPeople, setTotalPeople] = useState("");
-    const [checkInDate, setCheckInDate] = useState("2024-08-26");
-    const [checkOutDate, setCheckOutDate] = useState("2024-08-27");
+    const [checkInDate, setCheckInDate] = useState(formatDate(today));
+    const [checkOutDate, setCheckOutDate] = useState(formatDate(tomorrow));
     const [error, setError] = useState("");
+    const [isBooked, setIsBooked] = useState(false);
+
+    useEffect(() => {
+        // Periksa status kamar dan perbarui state isBooked
+        const booked = rooms.some(room => room.detail_room?.status === "booked");
+        setIsBooked(booked);
+    }, [rooms]);
 
     const calculateTotalPrice = (room, nights) => {
         return room.amount * nights;
@@ -32,71 +47,84 @@ function OrderForm({ rooms }) {
         event.preventDefault();
         const room = rooms[0];
         const nights = calculateNights();
-    
+
+        if (isBooked) {
+            alert("Sorry, the room is booked.");
+            return;
+        }
+
         if (!totalPeople || totalPeople < 1) {
             setError("Total people must be at least 1.");
             return;
         }
-    
+
         if (totalPeople > room.detail_room?.capacity) {
             setError(
                 `Cannot exceed the capacity of ${room.detail_room?.capacity} People.`
             );
             return;
         }
-    
+
         if (nights < 1) {
             setError("Check-out date must be after check-in date.");
             return;
         }
-    
+
         // Membuat objek untuk menyimpan data ke localStorage
-        Cookies.set('bookingData', JSON.stringify({
-            checkInDate,
-            checkOutDate,
-            totalPeople,
-            room: {
-                name: room.name,
-                id_room: room.id_room,
-                id_detail: room.detail_room?.id_detail,
-                amount: room.amount,
-                price: room.price,
-                bed_type: room.detail_room?.bed_type,
-                images: room.detail_room?.images || [],
+        Cookies.set(
+            "bookingData",
+            JSON.stringify({
+                checkInDate,
+                checkOutDate,
+                totalPeople,
+                room: {
+                    name: room.name,
+                    id_room: room.id_room,
+                    id_detail: room.detail_room?.id_detail,
+                    amount: room.amount,
+                    price: room.price,
+                    status: room.detail_room?.status,
+                    bed_type: room.detail_room?.bed_type,
+                    images: room.detail_room?.images || [],
+                },
+                nights,
+                totalPrice: calculateTotalPrice(room, nights),
+                totalSavings: calculateSavings(room, nights),
+            }),
+            { expires: 1 }
+        );
+
+        Inertia.post(
+            "/api/save-booking-data",
+            {
+                checkInDate,
+                checkOutDate,
+                totalPeople,
+                room: {
+                    name: room.name,
+                    id_room: room.id_room,
+                    id_detail: room.detail_room?.id_detail,
+                    amount: room.amount,
+                    price: room.price,
+                    status: room.detail_room?.status,
+                    bed_type: room.detail_room?.bed_type,
+                    images: room.detail_room?.images || [],
+                },
+                nights,
+                totalPrice: calculateTotalPrice(room, nights),
+                totalSavings: calculateSavings(room, nights),
             },
-            nights,
-            totalPrice: calculateTotalPrice(room, nights),
-            totalSavings: calculateSavings(room, nights),
-        }), { expires: 1 });
-    
-        Inertia.post('/api/save-booking-data', {
-            checkInDate,
-            checkOutDate,
-            totalPeople,
-            room: {
-                name: room.name,
-                id_room: room.id_room,
-                id_detail: room.detail_room?.id_detail,
-                amount: room.amount,
-                price: room.price,
-                bed_type: room.detail_room?.bed_type,
-                images: room.detail_room?.images || [],
-            },
-            nights,
-            totalPrice: calculateTotalPrice(room, nights),
-            totalSavings: calculateSavings(room, nights),
-        }, {
-            onSuccess: () => {
-             },
-            onError: (errors) => {
-                console.log("Error redirecting to payment page:", errors);
-            },
-        });
+            {
+                onSuccess: () => {},
+                onError: (errors) => {
+                    console.log("Error redirecting to payment page:", errors);
+                },
+            }
+        );
     };
-    
 
     return (
-        <div className="h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7">
+        <div className={`h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7 ${isBooked ? "opacity-50" : ""}`}>
             {rooms.map((room) => {
                 const nights = calculateNights();
                 const totalPrice = calculateTotalPrice(room, nights);
@@ -136,7 +164,7 @@ function OrderForm({ rooms }) {
 
                         <form onSubmit={handleSubmit}>
                             <div className="mt-5 border rounded-lg p-4">
-                                <div className="flex justify-between ">
+                                <div className="flex justify-between">
                                     <div>
                                         <h4 className="text-sm font-medium">
                                             Check In
@@ -149,6 +177,7 @@ function OrderForm({ rooms }) {
                                             }
                                             className="border border-none outline-none focus:outline-none bg-transparent"
                                             required
+                                            disabled={isBooked}
                                         />
                                     </div>
                                     <div>
@@ -163,6 +192,7 @@ function OrderForm({ rooms }) {
                                             }
                                             className="border border-none outline-none focus:outline-none bg-transparent"
                                             required
+                                            disabled={isBooked}
                                         />
                                     </div>
                                 </div>
@@ -179,6 +209,7 @@ function OrderForm({ rooms }) {
                                         }
                                         className="border border-none outline-none focus:outline-none bg-transparent w-full"
                                         required
+                                        disabled={isBooked}
                                     />
 
                                     {error && (
@@ -230,7 +261,10 @@ function OrderForm({ rooms }) {
                                 </div>
                             </div>
 
-                            <button className="mt-5 w-full py-3 bg-[#435585] text-white font-semibold rounded-lg">
+                            <button
+                                className="mt-5 w-full py-3 bg-[#435585] text-white font-semibold rounded-lg"
+                                disabled={isBooked}
+                            >
                                 Process to Payment
                             </button>
                         </form>

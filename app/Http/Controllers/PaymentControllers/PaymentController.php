@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class PaymentController extends Controller
@@ -19,7 +20,7 @@ class PaymentController extends Controller
         $parsedBookingData = json_decode($bookingData, true);
 
         return Inertia::render('Payments/PaymentView', [
-        'bookingData' => $parsedBookingData,
+            'bookingData' => $parsedBookingData,
             'rooms' => $rooms,
             'user' => $user,
         ]);
@@ -28,7 +29,7 @@ class PaymentController extends Controller
     public function storeTransaction(Request $request)
     {
         Log::info('Received Data:', $request->all());
-    
+
         $validated = $request->validate([
             'order_id' => 'required|string',
             'check_in_date' => 'required|date',
@@ -43,10 +44,15 @@ class PaymentController extends Controller
             'status' => 'required|string',
             'payment_type' => 'required|string',
         ]);
-    
-        $transaction = Transactions::create($validated);
-    
-     }
+
+        Transactions::create($validated);
+
+        // Flash success message to session
+        Session::flash('success', 'Pembayaran berhasil dilakukan!');
+       
+        // Redirect to the transactions page
+        return redirect()->route('transaction.index');
+    }
 
     public function saveBookingData(Request $request)
     {
@@ -55,6 +61,4 @@ class PaymentController extends Controller
         $cookie = cookie('bookingData', json_encode($data), $minutes, '/', null, true, true, false, 'Strict');
         return redirect()->route('payment-detail')->cookie($cookie);
     }
-
-    
 }

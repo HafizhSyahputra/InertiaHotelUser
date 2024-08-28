@@ -51,4 +51,6 @@ class Transactions extends Model
     {
         return $this->belongsTo(DetailRoom::class, 'detail_room_id', 'id_detail');
     }
+
+
 }

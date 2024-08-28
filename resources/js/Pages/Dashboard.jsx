@@ -38,7 +38,7 @@ export default function Dashboard({ auth }) {
                         </h3>
                     </div>
                 </div>
-                <div className="absolute inset-x-0 bottom-[1710px] flex justify-center">
+                <div className="absolute inset-x-0 bottom-[1730px] flex justify-center">
                     <SearchBar />
                 </div>
                 <div className="flex justify-center gap-x-10 px-32 mt-20 mb-20">

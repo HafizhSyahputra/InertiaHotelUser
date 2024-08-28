@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@headlessui/react";
 import { Inertia } from "@inertiajs/inertia";
+import Swal from "sweetalert2";
 
 function PaymentForm({ user, bookingData }) {
+    const [paymentMethod, setPaymentMethod] = useState("bca"); 
+
     const getDayName = (dateString) => {
         const date = new Date(dateString);
         const options = { weekday: "long" };
@@ -11,35 +14,62 @@ function PaymentForm({ user, bookingData }) {
 
     const generateOrderId = () => {
         const date = new Date();
-        const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');  
-        const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, '');  
-        const uniqueSuffix = Date.now() % 1000;  
-    
+        const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
+        const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, "");
+        const uniqueSuffix = Date.now() % 1000;
+
         return `ORDER-${dateStr}-${timeStr}${uniqueSuffix}`;
     };
-    
+
     const handlePayClick = () => {
-        Inertia.post("/save-transaction", {
-            order_id: generateOrderId(),
-            check_in_date: bookingData.checkInDate,
-            check_out_date: bookingData.checkOutDate,
-            user_id: user.id, 
-            room_id: bookingData.room.id_room,
-            detail_room_id: bookingData.room.id_detail, 
-            total_people: bookingData.totalPeople,
-            total_nights: bookingData.nights, 
-            tax: bookingData.totalPrice * 0.01,
-            total_price: bookingData.totalPrice,
-            status: "active",
-            payment_type: "credit_card",
-        }, {
-            onSuccess: (response) => {
-                if (response.props.success) {
-                    alert("Pesanan berhasil dibuat");
-                }
-            },
-            onError: () => {
-                alert("Terjadi kesalahan. Silakan coba lagi.");
+        Swal.fire({
+            title: "Konfirmasi Pembayaran",
+            text: "Apakah Anda yakin ingin melanjutkan pembayaran?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, bayar!",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.post(
+                    "/save-transaction",
+                    {
+                        order_id: generateOrderId(),
+                        check_in_date: bookingData.checkInDate,
+                        check_out_date: bookingData.checkOutDate,
+                        user_id: user.id,
+                        room_id: bookingData.room.id_room,
+                        detail_room_id: bookingData.room.id_detail,
+                        total_people: bookingData.totalPeople,
+                        total_nights: bookingData.nights,
+                        tax: bookingData.totalPrice * 0.01,
+                        total_price: bookingData.totalPrice,
+                        status: "active",
+                        payment_type: paymentMethod,
+                    },
+                    {
+                        onSuccess: (response) => {
+                            Swal.fire({
+                                title: "Pembayaran Berhasil!",
+                                text:
+                                    flash.success || "Pesanan berhasil dibuat",
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                            }).then(() => {
+                                Inertia.visit("/Transactions/TransactionView");
+                            });
+                        },
+                        onError: () => {
+                            Swal.fire(
+                                "Error!",
+                                "Terjadi kesalahan. Silakan coba lagi.",
+                                "error"
+                            );
+                        },
+                    }
+                );
             }
         });
     };
@@ -50,8 +80,6 @@ function PaymentForm({ user, bookingData }) {
 
     return (
         <div>
-            {/* <pre>{JSON.stringify(bookingData, null, 2)}</pre> */}
-
             {bookingData.room.images[0] ? (
                 <img
                     src={bookingData.room.images[0]}
@@ -63,7 +91,7 @@ function PaymentForm({ user, bookingData }) {
                     <span className="text-gray-500">No Image Available</span>
                 </div>
             )}
-            <div className="h-[550px] w-[414px] bg-white shadow-lg rounded-xl p-7">
+            <div className="h-auto w-[414px] bg-white shadow-lg rounded-xl p-7">
                 <div>
                     <div className="flex flex-row gap-x-5">
                         <h3 className="text-xl font-bold text-black">
@@ -151,6 +179,26 @@ function PaymentForm({ user, bookingData }) {
                                     })}
                                 </span>
                             </div>
+                        </div>
+
+                        <div className="mt-5 border rounded-lg p-4">
+                            <h4 className="text-sm font-medium mb-2">
+                                Payment Method
+                            </h4>
+                            <select
+                                className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500  rounded-lg p-2 w-full"
+                                value={paymentMethod}
+                                onChange={(e) =>
+                                    setPaymentMethod(e.target.value)
+                                }
+                            >
+                                <option value="bca">BCA</option>
+                                <option value="paypal">
+                                    PayPal
+                                </option>
+                                <option value="mandiri">Mandiri</option>
+                                <option value="bri">BRI</option>
+                            </select>
                         </div>
 
                         <button

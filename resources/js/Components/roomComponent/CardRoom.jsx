@@ -13,7 +13,7 @@ function CardRoom({ rooms }) {
             {rooms.length > 0 ? (
                 rooms.map((room) => (
                     <div key={room.id_room}>
-                        <div className="bg-white shadow-md rounded-2xl w-[300px] h-[460px] flex-shrink-0">
+                        <div className="bg-white shadow-md rounded-2xl w-[300px] h-[470px] flex-shrink-0">
                             {room.detail_room?.images && (
                                 <img
                                     className="w-[313px] h-[175px] rounded-t-2xl"
@@ -65,12 +65,24 @@ function CardRoom({ rooms }) {
                                 <h1 className="flex justify-end text-md mt-[1px] font-medium text-red-600 mb-2">
                                     {room.discount}% Off
                                 </h1>
-                                <Link
-                                    href={`/detail/room/${room.id_room}`}
-                                    className="text-white bg-[#435585] px-8 py-2 rounded-2xl hover:bg-blue-900"
-                                >
-                                    Details
-                                </Link>
+                                <div className="flex flex-row justify-between items-center">
+                                    <Link
+                                        href={`/detail/room/${room.id_room}`}
+                                        className="text-white bg-[#435585] px-8 py-2 rounded-2xl hover:bg-blue-900"
+                                    >
+                                        Details
+                                    </Link>
+                                    <p
+                                        className={`font-medium text-md ${
+                                            room.detail_room.status ===
+                                            "available"
+                                                ? "text-green-800"
+                                                : "text-red-700"
+                                        }`}
+                                    >
+                                        {room.detail_room.status}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
