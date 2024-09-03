@@ -19,10 +19,24 @@ function OrderForm({ rooms }) {
     const [isBooked, setIsBooked] = useState(false);
 
     useEffect(() => {
-        // Periksa status kamar dan perbarui state isBooked
-        const booked = rooms.some(room => room.detail_room?.status === "booked");
+        // Status Kamar
+        const booked = rooms.some(
+            (room) => room.detail_room?.status === "booked"
+        );
         setIsBooked(booked);
     }, [rooms]);
+
+    useEffect(() => {
+        const todayFormatted = formatDate(today);
+
+        if (checkInDate < todayFormatted) {
+            setCheckInDate(todayFormatted);
+        }
+
+        if (checkOutDate < checkInDate) {
+            setCheckOutDate(checkInDate);
+        }
+    }, [checkInDate, checkOutDate]);
 
     const calculateTotalPrice = (room, nights) => {
         return room.amount * nights;
@@ -70,7 +84,7 @@ function OrderForm({ rooms }) {
             return;
         }
 
-        // Membuat objek untuk menyimpan data ke localStorage
+        // localStorage
         Cookies.set(
             "bookingData",
             JSON.stringify({
@@ -124,7 +138,11 @@ function OrderForm({ rooms }) {
     };
 
     return (
-        <div className={`h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7 ${isBooked ? "opacity-50" : ""}`}>
+        <div
+            className={`h-[575px] w-[414px] bg-white shadow-lg rounded-xl p-7 ${
+                isBooked ? "opacity-50" : ""
+            }`}
+        >
             {rooms.map((room) => {
                 const nights = calculateNights();
                 const totalPrice = calculateTotalPrice(room, nights);
