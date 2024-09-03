@@ -28,6 +28,7 @@
         "react-leaflet": "^4.2.1",
         "react-map-gl": "^7.1.7",
         "react-router-dom": "^6.26.1",
+        "react-toastify": "^10.0.5",
         "sweetalert2": "^11.12.4",
         "ziggy-js": "^2.3.0"
     }

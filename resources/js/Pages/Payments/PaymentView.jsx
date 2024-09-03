@@ -14,7 +14,7 @@ function PaymentView({ user, bookingData }) {
         <AuthenticatedLayout user={user}>
             <Head title="Payment Detail" />
             <div className="px-32 py-12">
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row mt-4 ">
                     <Link
                         href="#"
                         onClick={handleClick}
@@ -37,11 +37,8 @@ function PaymentView({ user, bookingData }) {
                         </svg>
                         <p className="mt-1">Kembali</p>
                     </Link>
-                    <h1 className="text-3xl font-bold text-center text-[#435585] ">
-                        Ringkasan Pembayaran
-                    </h1>
                 </div>
-                <div className="flex flex-row justify-between mt-10 items-center">
+                <div className="flex flex-row justify-between mt-10  items-center">
                     <div>
                         <PaymentForm user={user} bookingData={bookingData} />
                     </div>

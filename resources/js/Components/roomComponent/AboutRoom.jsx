@@ -1,4 +1,6 @@
 import React from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import MapComponent from "./MapComponent";
 
 const AboutRoom = ({ rooms }) => {
@@ -7,12 +9,25 @@ const AboutRoom = ({ rooms }) => {
         return null;
     }
 
-    // Jika tidak ada data marker, buat marker dengan koordinat default
     const markers = rooms.map((room) => ({
-        lat: room.location?.lat || -6.2814924, // Default latitude jika tidak ada
-        lng: room.location?.lng || 106.7218921, // Default longitude jika tidak ada
+        lat: room.location?.lat || -6.2814924,
+        lng: room.location?.lng || 106.7218921,
         info: `${room.name}<br/>${room.address}`,
     }));
+
+    rooms.forEach(room => {
+        if (room.detail_room?.status === "booked") {
+            toast.error(`"${room.name}" is already booked by someone else!`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    });
 
     return (
         <div>
@@ -34,7 +49,7 @@ const AboutRoom = ({ rooms }) => {
                         Lihat Peta
                     </h1>
                     <MapComponent markers={markers} />
-                    <h1 className="text-3xl font-bold text-black text-wrap mt-4 mb-6">
+                    <h1 className="text-3xl font-bold text-black text-wrap mt-8 mb-6">
                         Tentang hotel
                     </h1>
                     {room.detail_room?.description && (
@@ -44,8 +59,10 @@ const AboutRoom = ({ rooms }) => {
                     )}
                 </div>
             ))}
+            <ToastContainer />
         </div>
     );
 };
 
 export default AboutRoom;
+

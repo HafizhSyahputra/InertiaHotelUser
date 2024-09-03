@@ -38,7 +38,9 @@ function HistoryPay({
                                 {transaction.status}
                             </p>
                             <div className="flex justify-between items-center mt-4">
-                                <p className="text-sm font-bold">Purchase date</p>
+                                <p className="text-sm font-bold">
+                                    Purchase date
+                                </p>
                                 <p className="text-sm font-bold">
                                     {new Intl.DateTimeFormat("id-ID", {
                                         year: "numeric",
@@ -51,12 +53,6 @@ function HistoryPay({
                             {expandedTransactionId === transaction.id && (
                                 <div className="mt-4 text-gray-700">
                                     <div className="text-gray-800 space-y-2 mb-6">
-                                        <p>
-                                            <strong className="font-semibold">
-                                                Status:
-                                            </strong>{" "}
-                                            {transaction.status}
-                                        </p>
                                         <p>
                                             <strong className="font-semibold">
                                                 Check-in:

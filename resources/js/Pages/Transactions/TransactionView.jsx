@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import HistoryPay from "@/Components/TransactionComponent/HistoryPay";
+import Footer from "@/Components/Footer";
 
 function TransactionView({ user, transactions }) {
     const [expandedTransactionId, setExpandedTransactionId] = useState(null);
@@ -149,6 +150,8 @@ function TransactionView({ user, transactions }) {
                     />
                 </div>
             </div>
+            <div className="mt-32">
+            <Footer /></div>
         </AuthenticatedLayout>
     );
 }

@@ -26,6 +26,7 @@ class Transactions extends Model
         'total_price',
         'status',
         'payment_type',
+        
     ];
 
     // Timestamps tidak digunakan di model ini

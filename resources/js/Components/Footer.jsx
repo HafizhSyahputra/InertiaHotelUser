@@ -1,3 +1,4 @@
+import { Link } from "@inertiajs/react";
 import React from "react";
 
 function Footer() {
@@ -12,8 +13,18 @@ function Footer() {
                 insight
             </h3>
             <div className="flex flex-row gap-x-6 justify-center mt-10">
-                <a href="#" className="flex bg-white text-black px-8 h-10 rounded-full items-center">Home</a>
-                <a href="#" className="flex items-center bg-white text-black px-8 h-10 rounded-full">About Us</a>
+                <Link
+                    href={route("dashboard")}
+                    className="flex bg-white text-black px-8 h-10 rounded-full items-center"
+                >
+                    Home
+                </Link>
+                <Link
+                    href={route("aboutIndex")}
+                    className="flex items-center bg-white text-black px-8 h-10 rounded-full"
+                >
+                    About Us
+                </Link>
             </div>
             <h3 className="text-white mt-32">
                 © 2022 Digoda. All Rights Reserved
